@@ -40,7 +40,7 @@ export default {
   methods: {
     setWeather(){
       this.currentWeatherData.then(weather => {
-        this.currentTemperature = `${Math.round(weather.main.temp)}°`;
+        this.currentTemperature = `${Math.round(weather.main.temp)}°°`;
         this.currentWeatherStatus = weather.weather[0].main;
         this.feelsLike = `Feels like ${Math.round(weather.main.feels_like)}°`;
       });
