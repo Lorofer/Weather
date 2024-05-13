@@ -50,6 +50,7 @@ export default {
               lon: location.longitude.toString(),
               appid: 'eda0abb3cc57eecb8bb542461e309089',
               units: 'metric',
+              //lang: 'ru',
             });
 
         return fetch(url)
