@@ -1,11 +1,7 @@
 <template>
   <section>
-    <div class="locate">
-      <img src="@/assets/location-icon.svg" alt="">
-      <p>{{city}}, {{country}}</p>
-    </div>
     <div class="icon">
-      <img src="@/assets/WeatherIcon%20-%202-32.svg">
+      <img src="@/assets/WeatherIcon%20-%202-32.svg" alt="">
     </div>
     <div class="weatherData">
       <h1>{{currentTemperature}}</h1>
@@ -32,19 +28,33 @@ export default {
       time: '',
     };
   },
-  props: ['city', 'country', 'currentWeatherData'],
+  props: ['city', 'country', 'createUrl', 'getLocation'],
   mounted(){
     this.getDateAndTime();
     this.setWeather();
   },
   methods: {
     setWeather(){
-      this.currentWeatherData.then(weather => {
-        this.currentTemperature = `${Math.round(weather.main.temp)}°`;
-        this.currentWeatherStatus = weather.weather[0].main;
-        //this.currentWeatherStatus = weather.weather[0].description;
-        this.feelsLike = `Feels like ${Math.round(weather.main.feels_like)}°`;
-      });
+      this.getLocation().then(location => {
+        const url = this.createUrl(
+            new URL('https://api.openweathermap.org/data/2.5/weather'),
+            {
+              lat: location.latitude.toString(),
+              lon: location.longitude.toString(),
+              appid: 'eda0abb3cc57eecb8bb542461e309089',
+              units: 'metric',
+              //lang: 'ru',
+            });
+
+        fetch(url)
+            .then(response => response.json())
+            .then(weather => {
+                this.currentTemperature = `${Math.round(weather.main.temp)}°`;
+                this.currentWeatherStatus = weather.weather[0].main;
+                //this.currentWeatherStatus = weather.weather[0].description;
+                this.feelsLike = `Feels like ${Math.round(weather.main.feels_like)}°`;
+              });
+      })
     },
     getDateAndTime(){
       const dateObj = new Date();
@@ -106,42 +116,13 @@ export default {
       this.day = day;
       this.time = `${hours}:${minutes}`;
     },
-
-    cachingDecorator(func) {
-      let cache = new Map();
-
-      return function(x) {
-        if (cache.has(x)) {
-          return cache.get(x);
-        }
-
-        let result = func.call(this, x);
-        cache.set(x, result);
-
-        return result;
-      };
-    },
   },
 };
 </script>
 
 <style scoped>
-*{
-  font-family: "Inter", sans-serif;
-  color: white;
-  font-weight: normal;
-}
-.locate{
-  display: flex;
-  font-size: 24px;
-  align-items: center;
-}
-.locate p{
-  padding-left: 16px;
-}
-
 .icon{
-  margin-top: 24px;
+  padding-top: 24px;
   width: 128px;
 }
 .icon img{
@@ -150,14 +131,14 @@ export default {
 }
 
 .weatherData{
-  margin-top: 24px;
+  padding-top: 24px;
 }
 .weatherData h1{
   font-size: 128px;
   line-height: 0.8;
 }
 .weatherData .weatherStatus{
-  margin-top: 14px;
+  padding-top: 14px;
   font-size: 24px;
 }
 .weatherData .feelsLike{

@@ -1,27 +1,24 @@
 <template>
+  <SelectedLocation
+      v-bind:getLocation="this.getLocation"
+  />
   <MainWeather
-      v-bind:city="this.city"
-      v-bind:country="this.country"
-      v-bind:currentWeatherData="this.getCurrentWeatherData()"
-      style="margin: 16px"
+      v-bind:createUrl="this.createUrl"
+      v-bind:getLocation="this.getLocation"
   />
 </template>
 
 <script>
 import MainWeather from "@/components/MainWeather.vue";
+import SelectedLocation from "@/components/SelectedLocation.vue"
 
 export default {
   components: {
-    MainWeather,
-  },
-  data() {
-    return {
-      city: '',
-      country: '',
-    };
+    MainWeather, SelectedLocation,
   },
   mounted() {
-    this.getCityAndCountry();
+    this.getLocation = this.cachingDecorator(this.getLocation);
+    this.createUrl = this.cachingDecorator(this.createUrl);
   },
   methods: {
     createUrl(url, params){
@@ -41,32 +38,24 @@ export default {
       return fetch(url)
           .then(response => response.json());
     },
-    getCurrentWeatherData() {
-      return this.getLocation().then(location => {
-        const url = this.createUrl(
-            new URL('https://api.openweathermap.org/data/2.5/weather'),
-            {
-              lat: location.latitude.toString(),
-              lon: location.longitude.toString(),
-              appid: 'eda0abb3cc57eecb8bb542461e309089',
-              units: 'metric',
-              //lang: 'ru',
-            });
+    cachingDecorator(func) {
+      let cache = new Map();
 
-        return fetch(url)
-            .then(response => response.json());
-      });
-    },
-    getCityAndCountry(){
-      return this.getLocation().then(location => {
-        this.city = location.city;
-        this.country = location.country_name;
-      });
+      return function(x) {
+       if (cache.has(x)) {
+         return cache.get(x);
+        }
+
+        let result = func.call(this, x);
+        cache.set(x, result);
+
+        return result;
+      };
     },
   },
 }
 </script>
 
-<style scoped>
+<style>
 
 </style>
