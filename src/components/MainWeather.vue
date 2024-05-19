@@ -138,22 +138,22 @@ export default {
   line-height: 0.8;
 }
 .weatherData .weatherStatus{
-  padding-top: 14px;
+  padding-top: 12px;
   font-size: 24px;
 }
 .weatherData .feelsLike{
-  margin-top: 6px;
+  padding-top: 8px;
   font-size: 20px;
 }
 
 .dateAndTime{
   font-size: 24px;
-  margin-top: 24px;
+  padding-top: 24px;
   font-weight: bold;
 }
 .dateAndTime p:last-child{
   font-size: 20px;
-  margin-top: 6px;
+  padding-top: 8px;
   word-spacing: 12px;
 }
 </style>
